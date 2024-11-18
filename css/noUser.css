@@ -40,7 +40,7 @@ input[type=text] {
     outline: none;
     border-radius: 5px;
     transition: width 1s ease-in-out;
-    margin: 20px 0px;
+    margin: 20px 5px;
 }
 
 button[type="submit"] {
