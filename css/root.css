@@ -1,0 +1,16 @@
+:root {
+    --main-font: "Press Start 2P", serif;
+    --main-white: #ffff;
+    --main-black: #000;
+    --dark-grey: #413931; 
+    --light-grey: #bdbdbd;
+    --dark-green: #18a46a;
+    --mid-green: #41b483;
+    --light-green: #73c5a4;
+    --dark-red: #c54141;
+    --mid-red: #ff625a;
+    --light-red: #de6a62;
+    --dark-blue: #528bc5;
+    --mid-blue: #62acee;
+    --light-blue: #73bdf6;
+}
