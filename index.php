@@ -39,6 +39,7 @@
                 <div class="secondary-buttons">
                     <a href="./newAccount.php"><button type="button">Criar Conta</button></a>
                     <a href="./forgotPassword.php"><button type="button">Esqueci minha senha</button></a>
+                    <a href="./noUser.php"><button type="button">Entrar sem conta</button></a>
                 </div>
             </form>
         </div>
