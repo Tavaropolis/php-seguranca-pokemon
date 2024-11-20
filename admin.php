@@ -21,13 +21,18 @@
     <header>
         <div class="header-container">
             <img src="./assets/admin.png" alt="Pessoa feliz">
-            <p>Você é admin. Logado como <span>administrador</span></p>
+            <div class="info-container">
+                <p>Você é admin. Logado como <span>administrador</span></p>
+                <form action="#" method="post">
+                    <input type="submit" name="deslogar" value="Logout">
+                </form>
+            </div>
         </div>
     </header>
     <main>
         <form action="#" method="get">
             <input type="text" name="inputUser" id="" placeholder="Pesquise um pokémon">
-            <button type="submit">Pesquisar</button>
+            <button type="submit" name="enviar">Pesquisar</button>
         </form>
         <?php
             if(isset($_GET['inputUser'])) {
@@ -71,3 +76,15 @@
     </main>
 </body>
 </html>
+
+<?php
+    session_start();
+
+    if(isset($_POST['deslogar'])) {
+        session_unset();
+        session_destroy();
+
+        header("location: index.php");
+        die();
+    }
+?>
