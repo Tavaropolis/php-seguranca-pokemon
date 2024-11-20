@@ -100,7 +100,7 @@
         $salt = bin2hex(random_bytes(16));
         $pepper = bin2hex(random_bytes(16));
         $password = $salt.$password.$pepper;
-        $password = password_hash($password, PASSWORD_BCRYPT);
+        $password = hash('sha256', $password);
 
         return [$salt, $password, $pepper];
     }
@@ -110,9 +110,9 @@
 
         try {
             $checkUser = $conn->prepare("SELECT username FROM users WHERE username = :user LIMIT 1");
-            $checkUser->bindParam(':user', $user);
+            $checkUser->bindParam(':user', $user, PDO::PARAM_STR);
             $checkUser->execute();
-            $checkUser = $checkUser->fetchAll(PDO::FETCH_ASSOC); 
+            $checkUser = $checkUser->fetch(PDO::FETCH_ASSOC); 
 
             return $checkUser ? $checkUser : [];
         } catch(Exception $e) {
@@ -125,9 +125,9 @@
 
         try {
             $checkEmail = $conn->prepare("SELECT email FROM users WHERE email = :email LIMIT 1");
-            $checkEmail->bindParam(':email', $email);
+            $checkEmail->bindParam(':email', $email, PDO::PARAM_STR);
             $checkEmail->execute();
-            $checkEmail = $checkEmail->fetchAll(PDO::FETCH_ASSOC); 
+            $checkEmail = $checkEmail->fetch(PDO::FETCH_ASSOC); 
 
             return $checkEmail ? $checkEmail : [];
         } catch(Exception $e) {
@@ -140,11 +140,11 @@
 
         try {
             $insertUser =  $conn->prepare("INSERT INTO users(username, email, salt, userPassword, pepper, roleId) VALUES (:user, :email, :salt, :password, :pepper, 2)");
-            $insertUser->bindParam(':user', $user);
-            $insertUser->bindParam(':email', $email);
-            $insertUser->bindParam(':salt', $salt);
-            $insertUser->bindParam(':password', $password);
-            $insertUser->bindParam(':pepper', $pepper);
+            $insertUser->bindParam(':user', $user, PDO::PARAM_STR);
+            $insertUser->bindParam(':email', $email, PDO::PARAM_STR);
+            $insertUser->bindParam(':salt', $salt, PDO::PARAM_STR);
+            $insertUser->bindParam(':password', $password, PDO::PARAM_STR);
+            $insertUser->bindParam(':pepper', $pepper, PDO::PARAM_STR);
 
             $insertUser->execute();
 
