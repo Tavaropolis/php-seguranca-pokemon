@@ -1,3 +1,6 @@
+<?php
+    require "pdoconn.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,11 +21,70 @@
     <header>
         <div class="header-container">
             <img src="./assets/user.png" alt="Pessoa triste">
-            <p>Você não é admin. Logado como <span>usuário</span></p>
+            <div class="info-container">
+                <p>Você não é admin. Logado como <span>usuário</span></p>
+                <form action="#" method="post">
+                    <input type="submit" name="deslogar" value="Logout">
+                </form>
+            </div>
         </div>
     </header>
     <main>
-        
+        <form action="#" method="get">
+            <input type="text" name="inputUser" id="" placeholder="Pesquise um pokémon">
+            <button type="submit">Pesquisar</button>
+        </form>
+        <?php
+            if(isset($_GET['inputUser'])) {
+                echo "<p>Você pesquisou por '{$_GET['inputUser']}' </p>"; 
+
+                try {
+                    $query = $conn->prepare("SELECT * FROM pokemon WHERE nome = :input OR tipo1 = :input OR tipo2 = :input OR evolucao = :input OR geracao = :input;");
+                    $query->bindParam(':input', $_GET['inputUser']);
+                    $query->execute();
+    
+                    $pokemons = $query->fetchAll(PDO::FETCH_ASSOC); 
+                } catch(Exception $e) {
+                    echo $e;
+                }
+            }
+        ?>
+        <?php if($_GET['inputUser']): ?>
+        <table>
+            <thead>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Tipo 1</th>
+                <th>Tipo 2</th>
+                <th>Evolução</th>
+                <th>Geração</th>
+            </thead>
+            <tbody>
+                <?php foreach ($pokemons as $pokemon): ?>
+                <tr>
+                    <td><?= $pokemon['id'] ?></td>
+                    <td><?= $pokemon['nome'] ?></td>
+                    <td><?= $pokemon['tipo1'] ?></td>
+                    <td><?= $pokemon['tipo2'] ?></td>
+                    <td><?= $pokemon['evolucao'] ?></td>
+                    <td><?= $pokemon['geracao'] ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php endif; ?>
     </main>
 </body>
 </html>
+
+<?php
+    session_start();
+
+    if(isset($_POST['deslogar'])) {
+        session_unset();
+        session_destroy();
+
+        header("location: index.php");
+        die();
+    }
+?>
