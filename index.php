@@ -1,3 +1,18 @@
+<?php
+    require "pdoconn.php";
+
+    session_start();
+
+    if(isset($_SESSION['role1Log'])) {
+        header("location: admin.php");
+        die();
+    }
+
+    if(isset(($_SESSION['role2Log']))) {
+        header("location: user.php");
+        die();
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,31 +58,60 @@
                 </div>
             </form>
         </div>
+        <?php
+            if(isset($_POST["user"], $_POST["password"])) {
+                $checkUser = searchUser($_POST['user']);
+    
+                if(count($checkUser)) {
+                    $salt = $checkUser["salt"];
+                    $password = $checkUser["userPassword"];
+                    $pepper = $checkUser["pepper"];
+                    
+                    if(validatePassword($_POST["password"], $salt, $password, $pepper)) {
+                        session_start();
+                        $username = $checkUser["username"];
+                        $roleId = $checkUser["roleId"];
+                        
+                        if($username == 'admin' && $roleId == '1') {
+                            $_SESSION['role1Log'] = true;
+                            header("location: admin.php");
+                            die();
+                        } else {
+                            $_SESSION['role2Log'] = true;
+                            header("location: user.php");
+                            die();
+                        }
+                    } else {
+                        echo "<p>Usuário ou senha inválidos</p>";
+                    }
+                } else {
+                    echo "<p>Usuário ou senha inválidos</p>";
+                }
+            }
+        ?>
     </main>
 </body>
 </html>
 
 <?php
-    try{
-        $conn = new PDO("mysql:host=localhost;dbname=pokedatabase", "root", "1234");
-        // $query = $conn->prepare("select * FROM pokemon");
-        // $query->execute();
- 
-        // for($i=0; $row = $query->fetch(); $i++){
-        //   echo $i." - ".$row['nome']."<br/>";
-        // }
-    } catch (PDOException $e) {
-        echo $e;
-    }  
+    function searchUser(string $user): array{
+        global $conn;
+        
+        try {
+            $checkUser = $conn->prepare("SELECT * FROM users WHERE username = :user LIMIT 1");
+            $checkUser->bindParam(':user', $user, PDO::PARAM_STR);
+            $checkUser->execute();
+            $checkUser = $checkUser->fetch(PDO::FETCH_ASSOC);
 
-    // if($_POST['user'] = 'user') {
-    //     header("location: user.php");
-    //     die();
-    // }
-
-    if($_POST['user'] == 'admin') {
-        header("location: admin.php");
-        die();
+            return $checkUser;
+        } catch (Exception $e) {
+           echo $e;
+        }
     }
 
+    function validatePassword(string $userInput, string $salt, string $password, string $pepper): string {
+        $userInput = hash('sha256', $salt.$userInput.$pepper);
+        
+        return $userInput == $password? true : false;
+    }
 ?>
