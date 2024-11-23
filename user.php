@@ -36,11 +36,12 @@
         </form>
         <?php
             if(isset($_GET['inputUser'])) {
-                echo "<p>Você pesquisou por '{$_GET['inputUser']}' </p>"; 
+                $inputUser = htmlspecialchars($_GET['inputUser']);
+                echo "<p>Você pesquisou por '{$inputUser}' </p>"; 
 
                 try {
                     $query = $conn->prepare("SELECT * FROM pokemon WHERE nome = :input OR tipo1 = :input OR tipo2 = :input OR evolucao = :input OR geracao = :input;");
-                    $query->bindParam(':input', $_GET['inputUser']);
+                    $query->bindParam(':input', $inputUser, PDO::PARAM_STR);
                     $query->execute();
     
                     $pokemons = $query->fetchAll(PDO::FETCH_ASSOC); 
@@ -80,11 +81,13 @@
 <?php
     session_start();
 
-    if(isset($_POST['deslogar'])) {
-        session_unset();
-        session_destroy();
-
-        header("location: index.php");
-        die();
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if(isset($_POST['deslogar'])) {
+            session_unset();
+            session_destroy();
+    
+            header("location: index.php");
+            die();
+        }
     }
 ?>
